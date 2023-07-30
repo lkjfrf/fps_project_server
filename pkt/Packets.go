@@ -2,6 +2,7 @@ package pkt
 
 import "FPSProject/utils"
 
+// 7명 입장 순서
 type R_EnterGmae struct {
 	PlayerId int32
 }
@@ -16,4 +17,8 @@ type SR_PlayerMove struct {
 type SR_PlayerRotation struct {
 	PlayerId  int32
 	RotationY float32
+}
+
+type R_PlayerSpawn struct {
+	SpawnPoints []int32
 }

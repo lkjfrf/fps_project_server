@@ -35,26 +35,25 @@ func (ph *PacketHandler) Init() {
 ------------------------------------------------------------ */
 
 func (ph *PacketHandler) Handle_EnterGame(c net.Conn, json string) {
-	recvpkt := utils.JsonStrToStruct[pkt.R_EnterGmae](json)
-
 	pkt := pkt.R_EnterGmae{
-		PlayerId: recvpkt.PlayerId,
+		PlayerId: sm.NewPlayer(c),
 	}
 	buffer := utils.MakeSendBuffer("EnterGame", pkt)
 	c.Write(buffer)
+	log.Println("ENTER SEND", string(buffer))
 }
 func (ph *PacketHandler) Handle_PlayerMove(c net.Conn, json string) {
-	recvpkt := utils.JsonStrToStruct[pkt.SR_PlayerMove](json)
+	//recvpkt := utils.JsonStrToStruct[pkt.SR_PlayerMove](json)
 
-	pkt := pkt.SR_PlayerMove{
-		PlayerId:        recvpkt.PlayerId,
-		InputKey:        recvpkt.InputKey,
-		IsPress:         recvpkt.IsPress,
-		CurrentLocation: recvpkt.CurrentLocation,
-	}
+	// pkt := pkt.SR_PlayerMove{
+	// 	PlayerId:        recvpkt.PlayerId,
+	// 	InputKey:        recvpkt.InputKey,
+	// 	IsPress:         recvpkt.IsPress,
+	// 	CurrentLocation: recvpkt.CurrentLocation,
+	// }
 
-	buffer := utils.MakeSendBuffer("PlayerMove", pkt)
-	c.Write(buffer)
+	//buffer := utils.MakeSendBuffer("PlayerMove", pkt)
+	//c.Write(buffer)
 }
 func (ph *PacketHandler) Handle_PlayerRotation(c net.Conn, json string) {
 
