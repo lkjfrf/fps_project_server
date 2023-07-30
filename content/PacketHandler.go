@@ -1,6 +1,8 @@
 package content
 
 import (
+	"FPSProject/pkt"
+	"FPSProject/utils"
 	"log"
 	"net"
 )
@@ -21,17 +23,40 @@ func (ph *PacketHandler) Init() {
 						TCP Packet Handler
 	------------------------------------------------------------ */
 
-	// GStar 전용
-	ph.TCPHandlerFunc["GStarSelect"] = ph.Handle_GStarSelect
+	ph.TCPHandlerFunc["EnterGame"] = ph.Handle_EnterGame
+	ph.TCPHandlerFunc["PlayerMove"] = ph.Handle_PlayerMove
+	ph.TCPHandlerFunc["PlayerRotation"] = ph.Handle_PlayerRotation
+	//ph.UDPHandlerFunc["PlayerRotation"] = ph.Handle_PlayerRotation
 
-	//ph.UDPHandlerFunc["PlayerMove"] = ph.Handle_PlayerMove
 }
 
 /* ------------------------------------------------------------
 					TCP Handler Function
 ------------------------------------------------------------ */
 
-func (ph *PacketHandler) Handle_GStarSelect(c net.Conn, json string) {
+func (ph *PacketHandler) Handle_EnterGame(c net.Conn, json string) {
+	recvpkt := utils.JsonStrToStruct[pkt.R_EnterGmae](json)
+
+	pkt := pkt.R_EnterGmae{
+		PlayerId: recvpkt.PlayerId,
+	}
+	buffer := utils.MakeSendBuffer("EnterGame", pkt)
+	c.Write(buffer)
+}
+func (ph *PacketHandler) Handle_PlayerMove(c net.Conn, json string) {
+	recvpkt := utils.JsonStrToStruct[pkt.SR_PlayerMove](json)
+
+	pkt := pkt.SR_PlayerMove{
+		PlayerId:        recvpkt.PlayerId,
+		InputKey:        recvpkt.InputKey,
+		IsPress:         recvpkt.IsPress,
+		CurrentLocation: recvpkt.CurrentLocation,
+	}
+
+	buffer := utils.MakeSendBuffer("PlayerMove", pkt)
+	c.Write(buffer)
+}
+func (ph *PacketHandler) Handle_PlayerRotation(c net.Conn, json string) {
 
 	//recvpkt := utils.JsonStrToStruct[pkt.C_GStarSelect](json)
 	//GetGlobalSession().GStarSelect(c, recvpkt)
