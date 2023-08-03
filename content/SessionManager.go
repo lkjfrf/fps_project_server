@@ -1,6 +1,7 @@
 package content
 
 import (
+	"log"
 	"net"
 	"sync"
 )
@@ -21,6 +22,7 @@ func (sm *SessionManager) NewSession() {
 	sm.SessionLock.Lock()
 	n := sm.CurrentSessionNum
 	sm.SessionLock.Unlock()
+	log.Println("NEW SESSION", sm.CurrentSessionNum)
 	sm.Sessions.Store(n, &Session{
 		SessionId: n,
 		Users:     []User{},
@@ -28,7 +30,15 @@ func (sm *SessionManager) NewSession() {
 }
 
 func (sm *SessionManager) NewPlayer(conn net.Conn) int32 {
-	sm.Sessions.Load(sm.CurrentSessionNum)
+	n := sm.CurrentSessionNum
+	if s, ok := sm.Sessions.Load(n); ok {
+		if len(s.(*Session).Users) < MATCHINGNUM {
+			s.(*Session).UserEnter(User{Conn: conn, SessionId: n})
+		} else {
+			sm.NewSession()
+			sm.NewPlayer(conn)
+		}
+	}
 	return 2
 }
 

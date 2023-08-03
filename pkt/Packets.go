@@ -20,5 +20,6 @@ type SR_PlayerRotation struct {
 }
 
 type R_PlayerSpawn struct {
+	PlayerIds   []int32
 	SpawnPoints []int32
 }

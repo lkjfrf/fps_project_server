@@ -1,6 +1,7 @@
 package content
 
 import (
+	"fmt"
 	"log"
 	"net"
 )
@@ -25,12 +26,16 @@ func (s *Session) Init() {
 }
 
 func (s *Session) UserEnter(usr User) int32 {
-	if len(s.Users) <= 7 {
+	if len(s.Users) < MATCHINGNUM {
 		id := len(s.Users) + 1
 		usr.Id = int32(id)
+		usr.NickName = fmt.Sprintf("%d", id)
 		s.Users = append(s.Users, usr)
 		return usr.Id
 	} else {
+		log.Println("UserEnter Overflow")
+		sm.NewSession()
+		s.UserEnter(usr)
 		return -1
 	}
 }
