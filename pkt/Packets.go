@@ -34,7 +34,7 @@ type R_RoomCreate struct {
 type S_RequestRoomList struct {
 }
 
-type RoomInfo struct {
+type FRoomInfo struct {
 	Title          string
 	Id             string
 	RoomNumber     int32
@@ -42,7 +42,7 @@ type RoomInfo struct {
 }
 
 type R_RoomList struct {
-	RoomList []RoomInfo
+	RoomList []FRoomInfo
 }
 
 type S_RoomCreate struct {

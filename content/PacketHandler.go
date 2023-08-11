@@ -88,7 +88,7 @@ func (ph *PacketHandler) Handle_RoomCreate(c net.Conn, json string) {
 	recvpkt := utils.JsonStrToStruct[pkt.S_RoomCreate](json)
 
 	roomNum := ph.RoomNum.Add(1)
-	ph.Room.Store(roomNum, pkt.RoomInfo{Id: recvpkt.Id, Title: recvpkt.Title, RoomNumber: roomNum, NumberOfPeople: 0})
+	ph.Room.Store(roomNum, pkt.FRoomInfo{Id: recvpkt.Id, Title: recvpkt.Title, RoomNumber: roomNum, NumberOfPeople: 0})
 }
 
 func (ph *PacketHandler) Handle_RequestRoomList(c net.Conn, json string) {
@@ -102,10 +102,10 @@ func (ph *PacketHandler) Handle_RequestRoomList(c net.Conn, json string) {
 						CONTENTS
 ------------------------------------------------------------ */
 
-func (ph *PacketHandler) GetRoomList() []pkt.RoomInfo {
-	roomList := []pkt.RoomInfo{}
+func (ph *PacketHandler) GetRoomList() []pkt.FRoomInfo {
+	roomList := []pkt.FRoomInfo{}
 	ph.Room.Range(func(key, value any) bool {
-		roomList = append(roomList, value.(pkt.RoomInfo))
+		roomList = append(roomList, value.(pkt.FRoomInfo))
 		return true
 	})
 	return roomList
