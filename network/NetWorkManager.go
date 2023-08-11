@@ -40,6 +40,42 @@ func (s *Server) RunTCP(addr string) {
 	}
 }
 
+func (s *Server) RunUDP(addr string) {
+
+	udpaddr, err := net.ResolveUDPAddr("udp", addr)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	listen, err := net.ListenUDP("udp", udpaddr)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	log.Println("Server Running at : " + listen.LocalAddr().String())
+
+	for {
+		recvBuf := make([]byte, 4096)
+		n, _, err := listen.ReadFrom(recvBuf)
+		if err != nil {
+			log.Println("UDP error", err)
+			return
+		}
+		if 0 < n {
+			log.Println("[UDPPKT]", recvBuf[:n])
+		}
+		// conn, err := listener.
+		// if err != nil {
+		// 	log.Fatal(err)
+		// 	return
+		// }
+
+		//log.Println("New Connection : " + conn.RemoteAddr().String())
+
+		// go s.EventLoop(conn)
+	}
+}
+
 func (s *Server) EventLoop(conn net.Conn) {
 
 	header := make([]byte, 4)
@@ -69,7 +105,7 @@ func (s *Server) EventLoop(conn net.Conn) {
 				pktname, jsondata := utils.ExtractData(namesize, datasize, recvdata)
 				log.Println(pktname, jsondata)
 				if _, ok := content.GetPacketHandler().TCPHandlerFunc[pktname]; ok {
-					log.Println(pktname, jsondata)
+					log.Println("[PKT/RECVED]", pktname, jsondata)
 					content.GetPacketHandler().TCPHandlerFunc[pktname](conn, jsondata)
 				} else {
 					log.Println("Unknown Packet : " + pktname)

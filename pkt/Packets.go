@@ -23,3 +23,31 @@ type R_PlayerSpawn struct {
 	PlayerIds   []int32
 	SpawnPoints []int32
 }
+
+type R_RoomCreate struct {
+	BCreate    bool
+	RoomNumber int32
+}
+
+type S_RequestRoomList struct {
+}
+
+type RoomInfo struct {
+	Title          string
+	Id             string
+	RoomNumber     int32
+	NumberOfPeople int32
+}
+
+type R_RoomList struct {
+	RoomList []RoomInfo
+}
+
+type S_RoomCreate struct {
+	Title string
+	Id    string
+}
+
+type S_Login struct {
+	Id string
+}

@@ -10,12 +10,14 @@ type SessionManager struct {
 	Sessions          *sync.Map
 	CurrentSessionNum int32
 	SessionLock       *sync.Mutex
+	PlayerSession     map[int32]*Session
 }
 
 func (sm *SessionManager) Init() {
 	sm.SessionLock = &sync.Mutex{}
 	sm.Sessions = &sync.Map{}
 	sm.CurrentSessionNum = 0
+	sm.NewSession()
 }
 
 func (sm *SessionManager) NewSession() {
@@ -33,13 +35,14 @@ func (sm *SessionManager) NewPlayer(conn net.Conn) int32 {
 	n := sm.CurrentSessionNum
 	if s, ok := sm.Sessions.Load(n); ok {
 		if len(s.(*Session).Users) < MATCHINGNUM {
-			s.(*Session).UserEnter(User{Conn: conn, SessionId: n})
+			// sm.PlayerSession
+			return s.(*Session).UserEnter(User{Conn: conn, SessionId: n})
 		} else {
 			sm.NewSession()
 			sm.NewPlayer(conn)
 		}
 	}
-	return 2
+	return -1
 }
 
 // func (sm *SessionManager) FindSession(conn net.Conn) Session {
