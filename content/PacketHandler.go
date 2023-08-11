@@ -13,6 +13,9 @@ type PacketHandler struct {
 	TCPHandlerFunc map[string]func(net.Conn, string)
 	UDPHandlerFunc map[string]func(*net.UDPAddr, string)
 
+	//Login -> Store
+	IdMap sync.Map
+
 	// ROOM
 	Room    sync.Map
 	RoomNum atomic.Int32
@@ -28,6 +31,8 @@ func (ph *PacketHandler) Init() {
 	/* ------------------------------------------------------------
 						TCP Packet Handler
 	------------------------------------------------------------ */
+
+	ph.TCPHandlerFunc["Login"] = ph.Handle_Login
 
 	ph.TCPHandlerFunc["EnterGame"] = ph.Handle_EnterGame
 	ph.TCPHandlerFunc["PlayerMove"] = ph.Handle_PlayerMove
@@ -47,6 +52,11 @@ func (ph *PacketHandler) Init() {
 /* ------------------------------------------------------------
 					TCP Handler Function
 ------------------------------------------------------------ */
+
+func (ph *PacketHandler) Handle_Login(c net.Conn, json string) {
+	// recvpkt := utils.JsonStrToStruct[pkt.S_Login](json)
+
+}
 
 func (ph *PacketHandler) Handle_EnterGame(c net.Conn, json string) {
 	pkt := pkt.R_EnterGmae{
@@ -83,6 +93,7 @@ func (ph *PacketHandler) Handle_RoomCreate(c net.Conn, json string) {
 
 func (ph *PacketHandler) Handle_RequestRoomList(c net.Conn, json string) {
 	pkt := pkt.R_RoomList{RoomList: ph.GetRoomList()}
+	log.Println("SENDROOMLIST : ", pkt.RoomList)
 	buffer := utils.MakeSendBuffer("RoomList", pkt)
 	c.Write(buffer)
 }

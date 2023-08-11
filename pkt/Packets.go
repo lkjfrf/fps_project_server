@@ -24,6 +24,8 @@ type R_PlayerSpawn struct {
 	SpawnPoints []int32
 }
 
+// ROOM
+
 type R_RoomCreate struct {
 	BCreate    bool
 	RoomNumber int32
@@ -48,6 +50,7 @@ type S_RoomCreate struct {
 	Id    string
 }
 
+// LOGIN
 type S_Login struct {
 	Id string
 }
