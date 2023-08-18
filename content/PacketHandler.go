@@ -7,6 +7,7 @@ import (
 	"net"
 	"sync"
 	"sync/atomic"
+	"time"
 )
 
 type PacketHandler struct {
@@ -34,10 +35,10 @@ func (ph *PacketHandler) Init() {
 
 	ph.TCPHandlerFunc["Login"] = ph.Handle_Login
 
-	ph.TCPHandlerFunc["EnterGame"] = ph.Handle_EnterGame
-	ph.TCPHandlerFunc["PlayerMove"] = ph.Handle_PlayerMove
+	ph.TCPHandlerFunc["R_LodingComplete"] = ph.Handle_R_LodingComplete
 
-	ph.UDPHandlerFunc["PlayerRotation"] = ph.Handle_PlayerRotation
+	ph.TCPHandlerFunc["PlayerMove"] = ph.Handle_PlayerMove
+	ph.TCPHandlerFunc["PlayerRotation"] = ph.Handle_PlayerRotation
 
 	// ROOM
 	ph.TCPHandlerFunc["RoomCreate"] = ph.Handle_RoomCreate
@@ -47,6 +48,8 @@ func (ph *PacketHandler) Init() {
 							CONTENTS
 	------------------------------------------------------------ */
 	ph.Room = sync.Map{}
+
+	//test()
 }
 
 /* ------------------------------------------------------------
@@ -58,30 +61,36 @@ func (ph *PacketHandler) Handle_Login(c net.Conn, json string) {
 
 }
 
-func (ph *PacketHandler) Handle_EnterGame(c net.Conn, json string) {
-	pkt := pkt.R_EnterGmae{
-		PlayerId: sm.NewPlayer(c),
-	}
-	buffer := utils.MakeSendBuffer("EnterGame", pkt)
-	c.Write(buffer)
-	log.Println("ENTER SEND", string(buffer))
+func (ph *PacketHandler) Handle_R_LodingComplete(c net.Conn, json string) {
+	recvpkt := utils.JsonStrToStruct[pkt.R_LodingComplete](json)
+
+	sm.TempNewSessionEnter(recvpkt.RoomNum, recvpkt.PlayerId, c)
 }
 func (ph *PacketHandler) Handle_PlayerMove(c net.Conn, json string) {
 	recvpkt := utils.JsonStrToStruct[pkt.SR_PlayerMove](json)
 
-	pkt := pkt.SR_PlayerMove{
-		PlayerId:        recvpkt.PlayerId,
+	// sm.Users[recvpkt.PlayerId].NeedSync = true
+	// sm.Users[recvpkt.PlayerId].CurrentLocation = recvpkt.CurrentLocation
+	pkt := pkt.SR_PlayerMove{PlayerId: recvpkt.PlayerId,
 		InputKey:        recvpkt.InputKey,
 		IsPress:         recvpkt.IsPress,
-		CurrentLocation: recvpkt.CurrentLocation,
-	}
-
+		CurrentLocation: recvpkt.CurrentLocation}
 	buffer := utils.MakeSendBuffer("PlayerMove", pkt)
-	c.Write(buffer)
+
+	sm.Users[recvpkt.PlayerId].Session.BroadCast(buffer)
 }
-func (ph *PacketHandler) Handle_PlayerRotation(c *net.UDPAddr, json string) {
-	// recvpkt := utils.JsonStrToStruct[pkt.SR_PlayerRotation](json)
-	// GetGlobalSession().GStarSelect(c, recvpkt)
+func (ph *PacketHandler) Handle_PlayerRotation(c net.Conn, json string) {
+	recvpkt := utils.JsonStrToStruct[pkt.SR_PlayerRotation](json)
+
+	// sm.Users[recvpkt.PlayerId].NeedSync = true
+	// sm.Users[recvpkt.PlayerId].RotationY = recvpkt.RotationY
+
+	pkt := pkt.SR_PlayerRotation{PlayerId: recvpkt.PlayerId,
+		RotationY: recvpkt.RotationY,
+	}
+	buffer := utils.MakeSendBuffer("PlayerRotation", pkt)
+
+	sm.Users[recvpkt.PlayerId].Session.BroadCast(buffer)
 }
 
 func (ph *PacketHandler) Handle_RoomCreate(c net.Conn, json string) {
@@ -109,4 +118,16 @@ func (ph *PacketHandler) GetRoomList() []pkt.FRoomInfo {
 		return true
 	})
 	return roomList
+}
+
+func test() {
+	go func() {
+		time.Sleep(time.Second * 2)
+		sm.TempNewSessionEnter(1, "hi", nil)
+		sm.TempNewSessionEnter(1, "wow", nil)
+		sm.TempNewSessionEnter(1, "wow123", nil)
+
+		a := "etstestset"
+		sm.Users["hi"].Session.BroadCast([]byte(a))
+	}()
 }
