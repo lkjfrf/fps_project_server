@@ -10,14 +10,30 @@ type SessionManager struct {
 	Sessions          *sync.Map
 	CurrentSessionNum int32
 	SessionLock       *sync.Mutex
-	PlayerSession     map[int32]*Session
+	// PlayerSession     map[int32]*Session
+	Users map[string]*User
 }
 
 func (sm *SessionManager) Init() {
 	sm.SessionLock = &sync.Mutex{}
 	sm.Sessions = &sync.Map{}
+	sm.Users = map[string]*User{}
 	sm.CurrentSessionNum = 0
 	sm.NewSession()
+}
+
+func (sm *SessionManager) TempNewSessionEnter(RoomNum int32, Id string, Conn net.Conn) {
+	if r, ok := sm.Sessions.Load(RoomNum); ok {
+		r.(*Session).UserEnter(User{Conn: Conn, Id: Id, RoomNum: RoomNum, Session: r.(*Session)})
+	} else {
+		s := Session{
+			RoomNum: RoomNum,
+			Users:   []User{},
+		}
+		s.Init()
+		s.UserEnter(User{Conn: Conn, Id: Id, RoomNum: RoomNum, Session: &s})
+		sm.Sessions.Store(RoomNum, &s)
+	}
 }
 
 func (sm *SessionManager) NewSession() {
@@ -26,8 +42,8 @@ func (sm *SessionManager) NewSession() {
 	sm.SessionLock.Unlock()
 	log.Println("NEW SESSION", sm.CurrentSessionNum)
 	sm.Sessions.Store(n, &Session{
-		SessionId: n,
-		Users:     []User{},
+		RoomNum: n,
+		Users:   []User{},
 	})
 }
 
@@ -36,7 +52,7 @@ func (sm *SessionManager) NewPlayer(conn net.Conn) int32 {
 	if s, ok := sm.Sessions.Load(n); ok {
 		if len(s.(*Session).Users) < MATCHINGNUM {
 			// sm.PlayerSession
-			return s.(*Session).UserEnter(User{Conn: conn, SessionId: n})
+			// return s.(*Session).UserEnter(User{Conn: conn, RoomNum: n})
 		} else {
 			sm.NewSession()
 			sm.NewPlayer(conn)

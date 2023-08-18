@@ -2,25 +2,38 @@ package pkt
 
 import "FPSProject/utils"
 
-// 7명 입장 순서
-type R_EnterGmae struct {
-	PlayerId int32
+// 방입장할때
+type R_RoomEnter struct {
+	PlayerId string
+	RoomNum  int32
+}
+
+// 방에서 게임시작버튼
+type R_GameStartButton struct {
+	PlayerId string
+	RoomNum  int32
+}
+
+// 게임시작되고 맵 로딩 끝날때
+type R_LodingComplete struct {
+	PlayerId string
+	RoomNum  int32
 }
 
 type SR_PlayerMove struct {
-	PlayerId        int32
+	PlayerId        string
 	InputKey        int32
 	IsPress         bool
 	CurrentLocation utils.Vec3
 }
 
 type SR_PlayerRotation struct {
-	PlayerId  int32
+	PlayerId  string
 	RotationY float32
 }
 
 type R_PlayerSpawn struct {
-	PlayerIds   []int32
+	PlayerIds   []string
 	SpawnPoints []int32
 }
 
