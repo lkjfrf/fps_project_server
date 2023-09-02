@@ -3,19 +3,19 @@ package pkt
 import "FPSProject/utils"
 
 // 방입장할때
-type R_RoomEnter struct {
+type S_RoomEnter struct {
 	PlayerId string
 	RoomNum  int32
 }
 
 // 방에서 게임시작버튼
-type R_GameStartButton struct {
+type S_GameStartButton struct {
 	PlayerId string
 	RoomNum  int32
 }
 
 // 게임시작되고 맵 로딩 끝날때
-type R_LodingComplete struct {
+type S_LodingComplete struct {
 	PlayerId string
 	RoomNum  int32
 }
@@ -38,8 +38,12 @@ type R_PlayerSpawn struct {
 }
 
 // ROOM
+type S_RoomCreate struct { // 방 생성시 서버 받음
+	Title string
+	Id    string
+}
 
-type R_RoomCreate struct {
+type R_RoomCreate struct { // 방 생성시 서버가 보냄
 	BCreate    bool
 	RoomNumber int32
 }
@@ -58,9 +62,8 @@ type R_RoomList struct {
 	RoomList []FRoomInfo
 }
 
-type S_RoomCreate struct {
-	Title string
-	Id    string
+type R_RoomEnter struct { // 방입장시 유저리스트 서버가 보냄
+	Id []string // 방에 있던사람은 방금들어온사람 1명, 방에 없던 사람은 방에 있는 사람들
 }
 
 // LOGIN

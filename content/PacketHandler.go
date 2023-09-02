@@ -18,8 +18,9 @@ type PacketHandler struct {
 	IdMap sync.Map
 
 	// ROOM
-	Room    sync.Map
-	RoomNum atomic.Int32
+	Room      sync.Map
+	RoomNum   atomic.Int32
+	RoomUsers sync.Map
 }
 
 func (ph *PacketHandler) Init() {
@@ -41,6 +42,9 @@ func (ph *PacketHandler) Init() {
 	ph.TCPHandlerFunc["PlayerRotation"] = ph.Handle_PlayerRotation
 
 	// ROOM
+	ph.TCPHandlerFunc["RoomEnter"] = ph.Handle_RoomEnter
+	ph.TCPHandlerFunc["GameStartButton"] = ph.Handle_GameStartButton
+	ph.TCPHandlerFunc["LodingComplete"] = ph.Handle_LodingComplete
 	ph.TCPHandlerFunc["RoomCreate"] = ph.Handle_RoomCreate
 	ph.TCPHandlerFunc["RequestRoomList"] = ph.Handle_RequestRoomList
 
@@ -48,6 +52,7 @@ func (ph *PacketHandler) Init() {
 							CONTENTS
 	------------------------------------------------------------ */
 	ph.Room = sync.Map{}
+	ph.RoomUsers = sync.Map{}
 
 	//test()
 }
@@ -62,7 +67,7 @@ func (ph *PacketHandler) Handle_Login(c net.Conn, json string) {
 }
 
 func (ph *PacketHandler) Handle_R_LodingComplete(c net.Conn, json string) {
-	recvpkt := utils.JsonStrToStruct[pkt.R_LodingComplete](json)
+	recvpkt := utils.JsonStrToStruct[pkt.S_LodingComplete](json)
 
 	sm.TempNewSessionEnter(recvpkt.RoomNum, recvpkt.PlayerId, c)
 }
@@ -98,13 +103,32 @@ func (ph *PacketHandler) Handle_RoomCreate(c net.Conn, json string) {
 
 	roomNum := ph.RoomNum.Add(1)
 	ph.Room.Store(roomNum, pkt.FRoomInfo{Id: recvpkt.Id, Title: recvpkt.Title, RoomNumber: roomNum, NumberOfPeople: 0})
+
+	pkt := pkt.R_RoomCreate{BCreate: true, RoomNumber: roomNum}
+	utils.SendPacket("RoomCreate", pkt, c)
 }
 
 func (ph *PacketHandler) Handle_RequestRoomList(c net.Conn, json string) {
 	pkt := pkt.R_RoomList{RoomList: ph.GetRoomList()}
 	log.Println("SENDROOMLIST : ", pkt.RoomList)
-	buffer := utils.MakeSendBuffer("RoomList", pkt)
-	c.Write(buffer)
+
+	utils.SendPacket("RoomList", pkt, c)
+}
+
+func (ph *PacketHandler) Handle_RoomEnter(c net.Conn, json string) {
+	recvpkt := utils.JsonStrToStruct[pkt.S_RoomEnter](json)
+	if r, ok := ph.Room.Load(recvpkt.RoomNum); ok {
+		r.(pkt.FRoomInfo).Id
+	}
+
+}
+func (ph *PacketHandler) Handle_GameStartButton(c net.Conn, json string) {
+	recvpkt := utils.JsonStrToStruct[pkt.S_GameStartButton](json)
+
+}
+func (ph *PacketHandler) Handle_LodingComplete(c net.Conn, json string) {
+	recvpkt := utils.JsonStrToStruct[pkt.S_LodingComplete](json)
+
 }
 
 /* ------------------------------------------------------------

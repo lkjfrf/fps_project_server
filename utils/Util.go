@@ -4,6 +4,7 @@ import (
 	"encoding/binary"
 	"encoding/json"
 	"log"
+	"net"
 )
 
 type Vec3 struct {
@@ -55,4 +56,9 @@ func JsonStrToStruct[T any](jsonstr string) T {
 		log.Println("Unmarshal Error !", err)
 	}
 	return data
+}
+
+func SendPacket(pktname string, data any, c net.Conn) {
+	buff := MakeSendBuffer(pktname, data)
+	c.Write(buff)
 }
