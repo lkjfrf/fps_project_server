@@ -162,7 +162,12 @@ func (ph *PacketHandler) Handle_RoomEnter(c net.Conn, json string) {
 func (ph *PacketHandler) GetRoomList() []pkt.FRoomInfo {
 	roomList := []pkt.FRoomInfo{}
 	ph.Room.Range(func(key, value any) bool {
-		roomList = append(roomList, value.(pkt.FRoomInfo))
+		r := pkt.FRoomInfo{
+			Title:          value.(*RoomInfo).Title,
+			Id:             value.(*RoomInfo).Id,
+			RoomNumber:     value.(*RoomInfo).RoomNumber,
+			NumberOfPeople: value.(*RoomInfo).NumberOfPeople}
+		roomList = append(roomList, r)
 		return true
 	})
 	return roomList
