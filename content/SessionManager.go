@@ -1,6 +1,7 @@
 package content
 
 import (
+	"FPSProject/utils"
 	"log"
 	"net"
 	"sync"
@@ -27,8 +28,9 @@ func (sm *SessionManager) TempNewSessionEnter(RoomNum int32, Id string, Conn net
 		r.(*Session).UserEnter(User{Conn: Conn, Id: Id, RoomNum: RoomNum, Session: r.(*Session)})
 	} else {
 		s := Session{
-			RoomNum: RoomNum,
-			Users:   []User{},
+			RoomNum:    RoomNum,
+			Users:      []User{},
+			SpawnIndex: utils.RandomInt32(MATCHINGNUM, 0, MATCHINGNUM-1),
 		}
 		s.Init()
 		s.UserEnter(User{Conn: Conn, Id: Id, RoomNum: RoomNum, Session: &s})

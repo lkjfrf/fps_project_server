@@ -32,8 +32,14 @@ type SR_PlayerRotation struct {
 }
 
 type R_PlayerSpawn struct {
-	PlayerIds   []string
-	SpawnPoints []int32
+	PlayerIndex int32    // 자기 자신의 스폰포인트값
+	SpawnIndex  []int32  // 모든사람의 스폰포인트 값 (무작위)
+	PlayerIds   []string // 모든 사람 ID 값
+
+	// 들어온 순 : 우현 영민 민석
+	//0
+	//2 0 1
+	//우현 영민 민석
 }
 
 // ROOM

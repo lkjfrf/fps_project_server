@@ -58,7 +58,7 @@ func (ph *PacketHandler) Init() {
 	------------------------------------------------------------ */
 	ph.Room = sync.Map{}
 
-	//test()
+	test()
 }
 
 /* ------------------------------------------------------------
@@ -182,7 +182,6 @@ func (ph *PacketHandler) GetRoomList() []pkt.FRoomInfo {
 func test() {
 	go func() {
 		time.Sleep(time.Second * 2)
-		pkt := pkt.R_RoomEnter{PlayerId: []string{"Hi"}, RoomNumber: 123}
-		utils.SendPacket("RoomEnter", pkt, nil)
+		//log.Print(utils.RandomInt32(7, 0, 6))
 	}()
 }

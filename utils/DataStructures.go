@@ -1,10 +1,15 @@
 package utils
 
-import "sync"
+import (
+	"math/rand"
+	"sync"
+)
 
-/////////////////////////////////////
-//             Element             //
-/////////////////////////////////////
+// ///////////////////////////////////
+//
+//	Element             //
+//
+// ///////////////////////////////////
 // https://cs.opensource.google/go/go/+/refs/tags/go1.20.2:src/container/list/list.go;l=48
 type Element struct { // Linked List 의 Element
 	next, prev *Element
@@ -25,9 +30,11 @@ func (e *Element) Prev() *Element {
 	return nil
 }
 
-/////////////////////////////////////
-//             List                //
-/////////////////////////////////////
+// ///////////////////////////////////
+//
+//	List                //
+//
+// ///////////////////////////////////
 type List struct {
 	root Element
 	len  int
@@ -158,4 +165,57 @@ type Stack struct {
 
 type Room struct {
 	lock sync.Mutex
+}
+
+// ///////////////////////////////////
+//
+//	Random             //
+//
+// ///////////////////////////////////
+func RandomInt(count, min, max int) []int {
+	if max < min || (max-min+1) < count {
+		return nil
+	}
+
+	// 중복되지 않는 정수를 추적하는 맵을 생성합니다.
+	uniqueMap := make(map[int]bool)
+	uniqueIntegers := make([]int, 0)
+
+	for len(uniqueIntegers) < count {
+		// 랜덤한 정수를 생성합니다.
+		randomNumber := rand.Intn(max-min+1) + min
+
+		// 이미 생성한 정수인지 확인합니다.
+		if !uniqueMap[randomNumber] {
+			// 중복이 아니라면 슬라이스에 추가하고 맵에 기록합니다.
+			uniqueIntegers = append(uniqueIntegers, randomNumber)
+			uniqueMap[randomNumber] = true
+		}
+	}
+
+	return uniqueIntegers
+}
+
+func RandomInt32(count, min, max int) []int32 {
+	if max < min || (max-min+1) < count {
+		return nil
+	}
+
+	// 중복되지 않는 정수를 추적하는 맵을 생성합니다.
+	uniqueMap := make(map[int]bool)
+	uniqueIntegers := make([]int32, 0)
+
+	for len(uniqueIntegers) < count {
+		// 랜덤한 정수를 생성합니다.
+		randomNumber := rand.Intn(max-min+1) + min
+
+		// 이미 생성한 정수인지 확인합니다.
+		if !uniqueMap[randomNumber] {
+			// 중복이 아니라면 슬라이스에 추가하고 맵에 기록합니다.
+			uniqueIntegers = append(uniqueIntegers, int32(randomNumber))
+			uniqueMap[randomNumber] = true
+		}
+	}
+
+	return uniqueIntegers
 }

@@ -10,10 +10,11 @@ import (
 )
 
 type Session struct {
-	RoomNum   int32
-	Users     []User
-	IsRunning bool
-	UserLock  sync.Mutex
+	RoomNum    int32
+	Users      []User
+	IsRunning  bool
+	UserLock   sync.Mutex
+	SpawnIndex []int32
 }
 
 type User struct {
@@ -24,6 +25,8 @@ type User struct {
 	CurrentLocation utils.Vec3
 	RotationY       float32
 	Session         *Session
+
+	SpawnIndex int32
 }
 
 func (s *Session) Init() {
@@ -65,13 +68,15 @@ func (s *Session) UserEnter(usr User) {
 func (s *Session) StartSyncMove() {
 
 	// Spawn
-	spawnPkt := pkt.R_PlayerSpawn{}
-	for i, u := range s.Users {
+	spawnPkt := pkt.R_PlayerSpawn{SpawnIndex: s.SpawnIndex}
+	for _, u := range s.Users {
 		spawnPkt.PlayerIds = append(spawnPkt.PlayerIds, u.Id)
-		spawnPkt.SpawnPoints = append(spawnPkt.SpawnPoints, int32(i))
 	}
-	spawnBuffer := utils.MakeSendBuffer("PlayerSpawn", spawnPkt)
-	s.BroadCast(spawnBuffer)
+	for i, u := range s.Users {
+		spawnPkt.PlayerIndex = int32(i)
+		buffer := utils.MakeSendBuffer("PlayerSpawn", spawnPkt)
+		u.Conn.Write(buffer)
+	}
 
 	// PlayerMove, Rotation Sync
 	go func() {
