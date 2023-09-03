@@ -10,7 +10,6 @@ type S_RoomEnter struct {
 
 // 방에서 게임시작버튼
 type S_GameStartButton struct {
-	PlayerId   string
 	RoomNumber int32
 }
 
@@ -76,4 +75,7 @@ type R_RoomInUser struct {
 // LOGIN
 type S_Login struct {
 	Id string
+}
+
+type R_GameStartButton struct {
 }

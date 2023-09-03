@@ -18,9 +18,8 @@ type PacketHandler struct {
 	IdMap sync.Map
 
 	// ROOM
-	Room      sync.Map
-	RoomNum   atomic.Int32
-	RoomUsers sync.Map
+	Room    sync.Map
+	RoomNum atomic.Int32
 }
 
 type RoomInfo struct {
@@ -60,7 +59,6 @@ func (ph *PacketHandler) Init() {
 							CONTENTS
 	------------------------------------------------------------ */
 	ph.Room = sync.Map{}
-	ph.RoomUsers = sync.Map{}
 
 	//test()
 }
@@ -150,10 +148,21 @@ func (ph *PacketHandler) Handle_RoomEnter(c net.Conn, json string) {
 	}
 }
 
-// func (ph *PacketHandler) Handle_GameStartButton(c net.Conn, json string) {
-// 	recvpkt := utils.JsonStrToStruct[pkt.S_GameStartButton](json)
+func (ph *PacketHandler) Handle_GameStartButton(c net.Conn, json string) {
+	recvpkt := utils.JsonStrToStruct[pkt.S_GameStartButton](json)
 
-// }
+	if r, ok := ph.Room.Load(recvpkt.RoomNumber); ok {
+		pk := pkt.R_GameStartButton{}
+
+		for _, id := range r.(*RoomInfo).Ids {
+			if c2, ok := ph.IdMap.Load(id); ok {
+				utils.SendPacket("GameStartButton", pk, c2.(net.Conn))
+			}
+		}
+		ph.Room.Delete(recvpkt.RoomNumber)
+	}
+}
+
 // func (ph *PacketHandler) Handle_LodingComplete(c net.Conn, json string) {
 // 	recvpkt := utils.JsonStrToStruct[pkt.S_LodingComplete](json)
 
