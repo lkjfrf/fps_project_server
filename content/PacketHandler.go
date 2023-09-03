@@ -49,7 +49,7 @@ func (ph *PacketHandler) Init() {
 	// ROOM
 	ph.TCPHandlerFunc["RoomEnter"] = ph.Handle_RoomEnter
 	ph.TCPHandlerFunc["GameStartButton"] = ph.Handle_GameStartButton
-	ph.TCPHandlerFunc["LodingComplete"] = ph.Handle_LodingComplete
+	ph.TCPHandlerFunc["LoadingComplete"] = ph.Handle_LoadingComplete
 	ph.TCPHandlerFunc["RoomCreate"] = ph.Handle_RoomCreate
 	ph.TCPHandlerFunc["RequestRoomList"] = ph.Handle_RequestRoomList
 
@@ -71,8 +71,8 @@ func (ph *PacketHandler) Handle_Login(c net.Conn, json string) {
 	log.Println("[LOGIN]", recvpkt.Id)
 }
 
-func (ph *PacketHandler) Handle_LodingComplete(c net.Conn, json string) {
-	recvpkt := utils.JsonStrToStruct[pkt.S_LodingComplete](json)
+func (ph *PacketHandler) Handle_LoadingComplete(c net.Conn, json string) {
+	recvpkt := utils.JsonStrToStruct[pkt.S_LoadingComplete](json)
 
 	sm.TempNewSessionEnter(recvpkt.RoomNumber, recvpkt.PlayerId, c)
 }
@@ -160,11 +160,6 @@ func (ph *PacketHandler) Handle_GameStartButton(c net.Conn, json string) {
 		ph.Room.Delete(recvpkt.RoomNumber)
 	}
 }
-
-// func (ph *PacketHandler) Handle_LodingComplete(c net.Conn, json string) {
-// 	recvpkt := utils.JsonStrToStruct[pkt.S_LodingComplete](json)
-
-// }
 
 /* ------------------------------------------------------------
 						CONTENTS
