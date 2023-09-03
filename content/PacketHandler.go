@@ -131,15 +131,15 @@ func (ph *PacketHandler) Handle_RoomEnter(c net.Conn, json string) {
 		r.(*RoomInfo).NumberOfPeople++
 		r.(*RoomInfo).Ids = append(r.(*RoomInfo).Ids, recvpkt.PlayerId)
 
-		pk1 := pkt.R_RoomEnter{}
-		pk2 := pkt.R_RoomEnter{Id: []string{recvpkt.PlayerId}}
+		pk1 := pkt.R_RoomEnter{RoomNumber: recvpkt.RoomNum}
+		pk2 := pkt.R_RoomInUser{PlayerId: recvpkt.PlayerId}
 		// 기존 인원들 list 주기
 		for _, id := range r.(*RoomInfo).Ids {
-			pk1.Id = append(pk1.Id, id)
+			pk1.PlayerId = append(pk1.PlayerId, id)
 
 			// 기존 인원들 한테 새로들어온 인원 알려주기
 			if c2, ok := ph.IdMap.Load(id); ok {
-				utils.SendPacket("RoomEnter", pk2, c2.(net.Conn))
+				utils.SendPacket("RoomInUser", pk2, c2.(net.Conn))
 			}
 		}
 		utils.SendPacket("RoomEnter", pk1, c)

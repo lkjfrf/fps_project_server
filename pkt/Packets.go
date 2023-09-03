@@ -62,8 +62,15 @@ type R_RoomList struct {
 	RoomList []FRoomInfo
 }
 
+// 방에 들어갈 사람이 받는 인원들 패킷
 type R_RoomEnter struct { // 방입장시 유저리스트 서버가 보냄
-	Id []string // 방에 있던사람은 방금들어온사람 1명, 방에 없던 사람은 방에 있는 사람들
+	PlayerId   []string
+	RoomNumber int32
+}
+
+// 방에 원래있던 인원들이 받는 패킷
+type R_RoomInUser struct {
+	PlayerId string
 }
 
 // LOGIN
