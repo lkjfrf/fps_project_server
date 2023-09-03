@@ -43,15 +43,13 @@ func (ph *PacketHandler) Init() {
 
 	ph.TCPHandlerFunc["Login"] = ph.Handle_Login
 
-	ph.TCPHandlerFunc["R_LodingComplete"] = ph.Handle_R_LodingComplete
-
 	ph.TCPHandlerFunc["PlayerMove"] = ph.Handle_PlayerMove
 	ph.TCPHandlerFunc["PlayerRotation"] = ph.Handle_PlayerRotation
 
 	// ROOM
 	ph.TCPHandlerFunc["RoomEnter"] = ph.Handle_RoomEnter
-	// ph.TCPHandlerFunc["GameStartButton"] = ph.Handle_GameStartButton
-	// ph.TCPHandlerFunc["LodingComplete"] = ph.Handle_LodingComplete
+	ph.TCPHandlerFunc["GameStartButton"] = ph.Handle_GameStartButton
+	ph.TCPHandlerFunc["R_LodingComplete"] = ph.Handle_R_LodingComplete
 	ph.TCPHandlerFunc["RoomCreate"] = ph.Handle_RoomCreate
 	ph.TCPHandlerFunc["RequestRoomList"] = ph.Handle_RequestRoomList
 
