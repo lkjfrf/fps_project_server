@@ -128,9 +128,6 @@ func (ph *PacketHandler) Handle_RequestRoomList(c net.Conn, json string) {
 func (ph *PacketHandler) Handle_RoomEnter(c net.Conn, json string) {
 	recvpkt := utils.JsonStrToStruct[pkt.S_RoomEnter](json)
 	if r, ok := ph.Room.Load(recvpkt.RoomNumber); ok {
-		r.(*RoomInfo).NumberOfPeople++
-		r.(*RoomInfo).Ids = append(r.(*RoomInfo).Ids, recvpkt.PlayerId)
-
 		pk1 := pkt.R_RoomEnter{RoomNumber: recvpkt.RoomNumber}
 		pk2 := pkt.R_RoomInUser{PlayerId: recvpkt.PlayerId}
 		// 기존 인원들 list 주기
@@ -142,7 +139,12 @@ func (ph *PacketHandler) Handle_RoomEnter(c net.Conn, json string) {
 				utils.SendPacket("RoomInUser", pk2, c2.(net.Conn))
 			}
 		}
-		utils.SendPacket("RoomEnter", pk1, c)
+		if len(pk1.PlayerId) != 0 { // 방금 방만든사람은 아무것도 안 받도록
+			utils.SendPacket("RoomEnter", pk1, c)
+		}
+
+		r.(*RoomInfo).NumberOfPeople++
+		r.(*RoomInfo).Ids = append(r.(*RoomInfo).Ids, recvpkt.PlayerId)
 	}
 }
 
