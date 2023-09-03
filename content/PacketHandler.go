@@ -78,7 +78,7 @@ func (ph *PacketHandler) Handle_Login(c net.Conn, json string) {
 func (ph *PacketHandler) Handle_R_LodingComplete(c net.Conn, json string) {
 	recvpkt := utils.JsonStrToStruct[pkt.S_LodingComplete](json)
 
-	sm.TempNewSessionEnter(recvpkt.RoomNum, recvpkt.PlayerId, c)
+	sm.TempNewSessionEnter(recvpkt.RoomNumber, recvpkt.PlayerId, c)
 }
 func (ph *PacketHandler) Handle_PlayerMove(c net.Conn, json string) {
 	recvpkt := utils.JsonStrToStruct[pkt.SR_PlayerMove](json)
@@ -127,11 +127,11 @@ func (ph *PacketHandler) Handle_RequestRoomList(c net.Conn, json string) {
 
 func (ph *PacketHandler) Handle_RoomEnter(c net.Conn, json string) {
 	recvpkt := utils.JsonStrToStruct[pkt.S_RoomEnter](json)
-	if r, ok := ph.Room.Load(recvpkt.RoomNum); ok {
+	if r, ok := ph.Room.Load(recvpkt.RoomNumber); ok {
 		r.(*RoomInfo).NumberOfPeople++
 		r.(*RoomInfo).Ids = append(r.(*RoomInfo).Ids, recvpkt.PlayerId)
 
-		pk1 := pkt.R_RoomEnter{RoomNumber: recvpkt.RoomNum}
+		pk1 := pkt.R_RoomEnter{RoomNumber: recvpkt.RoomNumber}
 		pk2 := pkt.R_RoomInUser{PlayerId: recvpkt.PlayerId}
 		// 기존 인원들 list 주기
 		for _, id := range r.(*RoomInfo).Ids {

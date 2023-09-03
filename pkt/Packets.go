@@ -4,8 +4,8 @@ import "FPSProject/utils"
 
 // 방입장할때
 type S_RoomEnter struct {
-	PlayerId string
-	RoomNum  int32
+	PlayerId   string
+	RoomNumber int32
 }
 
 // 방에서 게임시작버튼
