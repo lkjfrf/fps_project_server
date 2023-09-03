@@ -10,14 +10,14 @@ type S_RoomEnter struct {
 
 // 방에서 게임시작버튼
 type S_GameStartButton struct {
-	PlayerId string
-	RoomNum  int32
+	PlayerId   string
+	RoomNumber int32
 }
 
 // 게임시작되고 맵 로딩 끝날때
 type S_LodingComplete struct {
-	PlayerId string
-	RoomNum  int32
+	PlayerId   string
+	RoomNumber int32
 }
 
 type SR_PlayerMove struct {
