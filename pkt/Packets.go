@@ -14,7 +14,7 @@ type S_GameStartButton struct {
 }
 
 // 게임시작되고 맵 로딩 끝날때
-type S_LodingComplete struct {
+type S_LoadingComplete struct {
 	PlayerId   string
 	RoomNumber int32
 }
