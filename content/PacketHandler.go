@@ -138,7 +138,7 @@ func (ph *PacketHandler) Handle_RoomEnter(c net.Conn, json string) {
 			pk1.PlayerId = append(pk1.PlayerId, id)
 
 			// 기존 인원들 한테 새로들어온 인원 알려주기
-			if c2, ok := ph.IdMap.Load(id); ok {
+			if c2, ok := ph.IdMap.Load(id); ok && id != recvpkt.PlayerId {
 				utils.SendPacket("RoomInUser", pk2, c2.(net.Conn))
 			}
 		}
