@@ -49,7 +49,7 @@ func (ph *PacketHandler) Init() {
 	// ROOM
 	ph.TCPHandlerFunc["RoomEnter"] = ph.Handle_RoomEnter
 	ph.TCPHandlerFunc["GameStartButton"] = ph.Handle_GameStartButton
-	ph.TCPHandlerFunc["R_LodingComplete"] = ph.Handle_R_LodingComplete
+	ph.TCPHandlerFunc["LodingComplete"] = ph.Handle_LodingComplete
 	ph.TCPHandlerFunc["RoomCreate"] = ph.Handle_RoomCreate
 	ph.TCPHandlerFunc["RequestRoomList"] = ph.Handle_RequestRoomList
 
@@ -71,7 +71,7 @@ func (ph *PacketHandler) Handle_Login(c net.Conn, json string) {
 	log.Println("[LOGIN]", recvpkt.Id)
 }
 
-func (ph *PacketHandler) Handle_R_LodingComplete(c net.Conn, json string) {
+func (ph *PacketHandler) Handle_LodingComplete(c net.Conn, json string) {
 	recvpkt := utils.JsonStrToStruct[pkt.S_LodingComplete](json)
 
 	sm.TempNewSessionEnter(recvpkt.RoomNumber, recvpkt.PlayerId, c)
