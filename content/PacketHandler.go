@@ -81,13 +81,16 @@ func (ph *PacketHandler) Handle_PlayerMove(c net.Conn, json string) {
 
 	// sm.Users[recvpkt.PlayerId].NeedSync = true
 	// sm.Users[recvpkt.PlayerId].CurrentLocation = recvpkt.CurrentLocation
-	pk := pkt.SR_PlayerMove{PlayerId: recvpkt.PlayerId,
+	pk := pkt.SR_PlayerMove{PlayerIndex: recvpkt.PlayerIndex,
 		InputKey:        recvpkt.InputKey,
 		IsPress:         recvpkt.IsPress,
 		CurrentLocation: recvpkt.CurrentLocation}
 	buffer := utils.MakeSendBuffer("PlayerMove", pk)
 
-	sm.Users[recvpkt.PlayerId].Session.BroadCast(buffer)
+	if s, ok := sm.Sessions.Load(recvpkt.RoomNumber); ok {
+		s.(*Session).BroadCast(buffer)
+	}
+	// sm.Users[recvpkt.PlayerIndex].Session.BroadCast(buffer)
 }
 func (ph *PacketHandler) Handle_PlayerRotation(c net.Conn, json string) {
 	recvpkt := utils.JsonStrToStruct[pkt.SR_PlayerRotation](json)
@@ -95,12 +98,15 @@ func (ph *PacketHandler) Handle_PlayerRotation(c net.Conn, json string) {
 	// sm.Users[recvpkt.PlayerId].NeedSync = true
 	// sm.Users[recvpkt.PlayerId].RotationY = recvpkt.RotationY
 
-	pk := pkt.SR_PlayerRotation{PlayerId: recvpkt.PlayerId,
+	pk := pkt.SR_PlayerRotation{PlayerIndex: recvpkt.PlayerIndex,
 		RotationY: recvpkt.RotationY,
 	}
 	buffer := utils.MakeSendBuffer("PlayerRotation", pk)
 
-	sm.Users[recvpkt.PlayerId].Session.BroadCast(buffer)
+	if s, ok := sm.Sessions.Load(recvpkt.RoomNumber); ok {
+		s.(*Session).BroadCast(buffer)
+	}
+	// sm.Users[recvpkt.PlayerIndex].Session.BroadCast(buffer)
 }
 
 func (ph *PacketHandler) Handle_RoomCreate(c net.Conn, json string) {

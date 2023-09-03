@@ -20,15 +20,17 @@ type S_LoadingComplete struct {
 }
 
 type SR_PlayerMove struct {
-	PlayerId        string
+	RoomNumber      int32
+	PlayerIndex     int32
 	InputKey        int32
 	IsPress         bool
 	CurrentLocation utils.Vec3
 }
 
 type SR_PlayerRotation struct {
-	PlayerId  string
-	RotationY float32
+	RoomNumber  int32
+	PlayerIndex string
+	RotationY   float32
 }
 
 type R_PlayerSpawn struct {

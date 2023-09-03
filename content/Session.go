@@ -6,7 +6,6 @@ import (
 	"log"
 	"net"
 	"sync"
-	"time"
 )
 
 type Session struct {
@@ -74,30 +73,29 @@ func (s *Session) StartSyncMove() {
 	}
 	for i, u := range s.Users {
 		spawnPkt.PlayerIndex = int32(i)
-		buffer := utils.MakeSendBuffer("PlayerSpawn", spawnPkt)
-		u.Conn.Write(buffer)
+		utils.SendPacket("PlayerSpawn", spawnPkt, u.Conn)
 	}
 
 	// PlayerMove, Rotation Sync
-	go func() {
-		for {
-			time.Sleep(time.Millisecond * 200)
-
-			if s.IsRunning {
-				for _, u := range s.Users {
-					if u.NeedSync {
-						pkt := pkt.SR_PlayerRotation{PlayerId: u.Id, RotationY: u.RotationY}
-						buffer := utils.MakeSendBuffer("PlayerRotation", pkt)
-						s.BroadCast(buffer)
-						u.NeedSync = false
-					}
-				}
-			} else {
-				log.Println("Game End", s.RoomNum)
-				return
-			}
-		}
-	}()
+	//go func() {
+	//	for {
+	//		time.Sleep(time.Millisecond * 200)
+	//
+	//		if s.IsRunning {
+	//			for _, u := range s.Users {
+	//				if u.NeedSync {
+	//					pkt := pkt.SR_PlayerRotation{PlayerIndex: u.Id, RotationY: u.RotationY}
+	//					buffer := utils.MakeSendBuffer("PlayerRotation", pkt)
+	//					s.BroadCast(buffer)
+	//					u.NeedSync = false
+	//				}
+	//			}
+	//		} else {
+	//			log.Println("Game End", s.RoomNum)
+	//			return
+	//		}
+	//	}
+	//}()
 }
 
 func (s *Session) BroadCast(buffer []byte) {
