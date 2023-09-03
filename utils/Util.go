@@ -61,4 +61,5 @@ func JsonStrToStruct[T any](jsonstr string) T {
 func SendPacket(pktname string, data any, c net.Conn) {
 	buff := MakeSendBuffer(pktname, data)
 	c.Write(buff)
+	log.Println("[PKT/SEND]", pktname, string(data.([]byte)))
 }
