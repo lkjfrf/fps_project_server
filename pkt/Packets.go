@@ -29,7 +29,7 @@ type SR_PlayerMove struct {
 
 type SR_PlayerRotation struct {
 	RoomNumber  int32
-	PlayerIndex string
+	PlayerIndex int32
 	RotationY   float32
 }
 

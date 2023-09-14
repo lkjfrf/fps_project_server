@@ -72,6 +72,7 @@ func (s *Session) StartSyncMove() {
 		spawnPkt.PlayerIds = append(spawnPkt.PlayerIds, u.Id)
 	}
 	for i, u := range s.Users {
+		u.SpawnIndex = int32(i)
 		spawnPkt.PlayerIndex = int32(i)
 		utils.SendPacket("PlayerSpawn", spawnPkt, u.Conn)
 	}
@@ -102,6 +103,18 @@ func (s *Session) BroadCast(buffer []byte) {
 	for _, u := range s.Users {
 		if u.Conn != nil {
 			u.Conn.Write(buffer)
+			log.Println("BROADCASTED to ", u.Id)
+		} else {
+			log.Println("No Connection:", string(buffer))
+		}
+	}
+}
+
+func (s *Session) BroadCastExcpetMe(buffer []byte, index int32) {
+	for _, u := range s.Users {
+		if u.Conn != nil && u.SpawnIndex != index {
+			u.Conn.Write(buffer)
+			log.Println("BROADCASTED to ", u.Id)
 		} else {
 			log.Println("No Connection:", string(buffer))
 		}
