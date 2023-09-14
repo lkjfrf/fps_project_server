@@ -72,7 +72,7 @@ func (s *Session) StartSyncMove() {
 		spawnPkt.PlayerIds = append(spawnPkt.PlayerIds, u.Id)
 	}
 	for i, u := range s.Users {
-		u.SpawnIndex = int32(i)
+		// u.SpawnIndex = int32(i)
 		spawnPkt.PlayerIndex = int32(i)
 		utils.SendPacket("PlayerSpawn", spawnPkt, u.Conn)
 	}
