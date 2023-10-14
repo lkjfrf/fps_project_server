@@ -24,6 +24,7 @@ type User struct {
 	CurrentLocation utils.Vec3
 	RotationY       float32
 	Session         *Session
+	Helath          int32
 
 	SpawnIndex int32
 }

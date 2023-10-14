@@ -53,6 +53,9 @@ func (ph *PacketHandler) Init() {
 	ph.TCPHandlerFunc["RoomCreate"] = ph.Handle_RoomCreate
 	ph.TCPHandlerFunc["RequestRoomList"] = ph.Handle_RequestRoomList
 
+	// Health
+	ph.TCPHandlerFunc["ChangeHealth"] = ph.Handle_ChangeHealth
+
 	/* ------------------------------------------------------------
 							CONTENTS
 	------------------------------------------------------------ */
@@ -155,6 +158,22 @@ func (ph *PacketHandler) Handle_RoomEnter(c net.Conn, json string) {
 func (ph *PacketHandler) Handle_GameStartButton(c net.Conn, json string) {
 	recvpkt := utils.JsonStrToStruct[pkt.S_GameStartButton](json)
 
+	if r, ok := ph.Room.Load(recvpkt.RoomNumber); ok {
+		pk := pkt.R_GameStartButton{}
+
+		for _, id := range r.(*RoomInfo).Ids {
+			if c2, ok := ph.IdMap.Load(id); ok {
+				utils.SendPacket("GameStartButton", pk, c2.(net.Conn))
+			}
+		}
+		ph.Room.Delete(recvpkt.RoomNumber)
+	}
+}
+
+func (ph *PacketHandler) Handle_ChangeHealth(c net.Conn, json string) {
+	recvpkt := utils.JsonStrToStruct[pkt.S_ChangeHealth](json)
+
+	sm.Sessions.Load()
 	if r, ok := ph.Room.Load(recvpkt.RoomNumber); ok {
 		pk := pkt.R_GameStartButton{}
 
