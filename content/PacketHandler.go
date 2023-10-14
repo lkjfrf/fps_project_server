@@ -91,7 +91,7 @@ func (ph *PacketHandler) Handle_PlayerMove(c net.Conn, json string) {
 	buffer := utils.MakeSendBuffer("PlayerMove", pk)
 
 	if s, ok := sm.Sessions.Load(recvpkt.RoomNumber); ok {
-		s.(*Session).BroadCast(buffer)
+		s.(*Session).BroadCastExcpetMe(buffer, recvpkt.PlayerIndex)
 	}
 	// sm.Users[recvpkt.PlayerIndex].Session.BroadCast(buffer)
 }
@@ -107,7 +107,7 @@ func (ph *PacketHandler) Handle_PlayerRotation(c net.Conn, json string) {
 	buffer := utils.MakeSendBuffer("PlayerRotation", pk)
 
 	if s, ok := sm.Sessions.Load(recvpkt.RoomNumber); ok {
-		s.(*Session).BroadCast(buffer)
+		s.(*Session).BroadCastExcpetMe(buffer, recvpkt.PlayerIndex)
 	}
 	// sm.Users[recvpkt.PlayerIndex].Session.BroadCast(buffer)
 }
