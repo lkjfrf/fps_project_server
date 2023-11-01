@@ -34,7 +34,7 @@ func (sm *SessionManager) TempNewSessionEnter(RoomNum int32, Id string, Conn net
 			SpawnIndex: utils.RandomInt32(MATCHINGNUM, 0, MATCHINGNUM-1),
 		}
 		s.Init()
-		s.UserEnter(User{Conn: Conn, Id: Id, RoomNum: RoomNum, Session: &s, SpawnIndex: 0})
+		s.UserEnter(User{Conn: Conn, Id: Id, RoomNum: RoomNum, Session: &s, SpawnIndex: 0, Helath: 100})
 		sm.Sessions.Store(RoomNum, &s)
 	}
 	sm.SessionLock.Unlock()

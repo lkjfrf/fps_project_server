@@ -180,6 +180,7 @@ func (ph *PacketHandler) Handle_ChangeHealth(c net.Conn, json string) {
 			pk := pkt.R_Die{PlayerIndex: recvpkt.PlayerIndex}
 			buffer := utils.MakeSendBuffer("Die", pk)
 			s.(*Session).BroadCast(buffer)
+			log.Println("User", recvpkt.PlayerIndex, " Die")
 		} else {
 			pk := pkt.R_ChangeHelath{PlayerIndex: recvpkt.PlayerIndex, CurrentHealth: currentHealth}
 			buffer := utils.MakeSendBuffer("ChangeHelath", pk)
