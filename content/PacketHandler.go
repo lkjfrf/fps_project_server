@@ -173,16 +173,18 @@ func (ph *PacketHandler) Handle_GameStartButton(c net.Conn, json string) {
 func (ph *PacketHandler) Handle_ChangeHealth(c net.Conn, json string) {
 	recvpkt := utils.JsonStrToStruct[pkt.S_ChangeHealth](json)
 
-	sm.Sessions.Load()
-	if r, ok := ph.Room.Load(recvpkt.RoomNumber); ok {
-		pk := pkt.R_GameStartButton{}
-
-		for _, id := range r.(*RoomInfo).Ids {
-			if c2, ok := ph.IdMap.Load(id); ok {
-				utils.SendPacket("GameStartButton", pk, c2.(net.Conn))
-			}
+	if s, ok := sm.Sessions.Load(recvpkt.RoomNumber); ok {
+		currentHealth := s.(*Session).ChangeHealth(recvpkt.PlayerIndex, recvpkt.Value)
+		log.Println("User", recvpkt.PlayerIndex, " Hit CurrentHelath :", currentHealth)
+		if currentHealth == 0 {
+			pk := pkt.R_Die{PlayerIndex: recvpkt.PlayerIndex}
+			buffer := utils.MakeSendBuffer("Die", pk)
+			s.(*Session).BroadCast(buffer)
+		} else {
+			pk := pkt.R_ChangeHelath{PlayerIndex: recvpkt.PlayerIndex, CurrentHealth: currentHealth}
+			buffer := utils.MakeSendBuffer("ChangeHelath", pk)
+			s.(*Session).BroadCast(buffer)
 		}
-		ph.Room.Delete(recvpkt.RoomNumber)
 	}
 }
 

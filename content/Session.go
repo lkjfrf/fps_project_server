@@ -116,8 +116,13 @@ func (s *Session) BroadCastExcpetMe(buffer []byte, index int32) {
 		if u.Conn != nil && u.SpawnIndex != index {
 			u.Conn.Write(buffer)
 			log.Println("BROADCASTED to ", u.Id)
-		} else {
-			log.Println("No Connection:", string(buffer))
 		}
 	}
+}
+
+func (s *Session) ChangeHealth(index int32, value int32) int32 {
+	s.UserLock.Lock()
+	s.Users[index].Helath += value
+	s.UserLock.Unlock()
+	return s.Users[index].Helath
 }
