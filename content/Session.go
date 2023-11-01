@@ -104,7 +104,7 @@ func (s *Session) BroadCast(buffer []byte) {
 	for _, u := range s.Users {
 		if u.Conn != nil {
 			u.Conn.Write(buffer)
-			log.Println("BROADCASTED to ", u.Id)
+			//log.Println("BROADCASTED to ", u.Id)
 		} else {
 			log.Println("No Connection:", string(buffer))
 		}
@@ -115,7 +115,7 @@ func (s *Session) BroadCastExcpetMe(buffer []byte, index int32) {
 	for _, u := range s.Users {
 		if u.Conn != nil && u.SpawnIndex != index {
 			u.Conn.Write(buffer)
-			log.Println("BROADCASTED to ", u.Id)
+			//log.Println("BROADCASTED to ", u.Id)
 		}
 	}
 }

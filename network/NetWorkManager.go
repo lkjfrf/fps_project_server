@@ -103,9 +103,10 @@ func (s *Server) EventLoop(conn net.Conn) {
 
 			if recvn == namesize+datasize {
 				pktname, jsondata := utils.ExtractData(namesize, datasize, recvdata)
-				log.Println(pktname, jsondata)
 				if _, ok := content.GetPacketHandler().TCPHandlerFunc[pktname]; ok {
-					log.Println("[PKT/RECVED]", pktname, jsondata)
+					if pktname != "PlayerMove" && pktname != "PlayerRotation" {
+						log.Println("[PKT/RECVED]", pktname, jsondata)
+					}
 					content.GetPacketHandler().TCPHandlerFunc[pktname](conn, jsondata)
 				} else {
 					log.Println("Unknown Packet : " + pktname)
