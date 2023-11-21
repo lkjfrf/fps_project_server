@@ -95,7 +95,7 @@ type S_ChangeHealth struct { // 내가 쏜 총알이 otherplayer에 맞으면 �
 	Value       int32 // 총맞으면 -10 , 물약먹으면 10  이런식으로
 }
 
-type R_ChangeHelath struct { // 맵에서 누군가 피 닳으면 맵에 있는 모든사람이 받는 패킷 (자신포함)
+type R_ChangeHealth struct { // 맵에서 누군가 피 닳으면 맵에 있는 모든사람이 받는 패킷 (자신포함)
 	PlayerIndex   int32
 	CurrentHealth int32
 }

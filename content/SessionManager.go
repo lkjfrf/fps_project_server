@@ -26,7 +26,7 @@ func (sm *SessionManager) TempNewSessionEnter(RoomNum int32, Id string, Conn net
 	sm.SessionLock.Lock()
 
 	if r, ok := sm.Sessions.Load(RoomNum); ok {
-		r.(*Session).UserEnter(User{Conn: Conn, Id: Id, RoomNum: RoomNum, Session: r.(*Session), SpawnIndex: int32(len(r.(*Session).Users))})
+		r.(*Session).UserEnter(User{Conn: Conn, Id: Id, RoomNum: RoomNum, Session: r.(*Session), SpawnIndex: int32(len(r.(*Session).Users)), Health: 100})
 	} else {
 		s := Session{
 			RoomNum:    RoomNum,
@@ -34,7 +34,7 @@ func (sm *SessionManager) TempNewSessionEnter(RoomNum int32, Id string, Conn net
 			SpawnIndex: utils.RandomInt32(MATCHINGNUM, 0, MATCHINGNUM-1),
 		}
 		s.Init()
-		s.UserEnter(User{Conn: Conn, Id: Id, RoomNum: RoomNum, Session: &s, SpawnIndex: 0, Helath: 100})
+		s.UserEnter(User{Conn: Conn, Id: Id, RoomNum: RoomNum, Session: &s, SpawnIndex: 0, Health: 100})
 		sm.Sessions.Store(RoomNum, &s)
 	}
 	sm.SessionLock.Unlock()

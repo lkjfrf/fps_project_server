@@ -175,15 +175,15 @@ func (ph *PacketHandler) Handle_ChangeHealth(c net.Conn, json string) {
 
 	if s, ok := sm.Sessions.Load(recvpkt.RoomNumber); ok {
 		currentHealth := s.(*Session).ChangeHealth(recvpkt.PlayerIndex, recvpkt.Value)
-		log.Println("User", recvpkt.PlayerIndex, " Hit CurrentHelath :", currentHealth)
+		log.Println("User", recvpkt.PlayerIndex, " Hit CurrentHealth :", currentHealth)
 		if currentHealth == 0 {
 			pk := pkt.R_Die{PlayerIndex: recvpkt.PlayerIndex}
 			buffer := utils.MakeSendBuffer("Die", pk)
 			s.(*Session).BroadCast(buffer)
 			log.Println("User", recvpkt.PlayerIndex, " Die")
 		} else {
-			pk := pkt.R_ChangeHelath{PlayerIndex: recvpkt.PlayerIndex, CurrentHealth: currentHealth}
-			buffer := utils.MakeSendBuffer("ChangeHelath", pk)
+			pk := pkt.R_ChangeHealth{PlayerIndex: recvpkt.PlayerIndex, CurrentHealth: currentHealth}
+			buffer := utils.MakeSendBuffer("ChangeHealth", pk)
 			s.(*Session).BroadCast(buffer)
 		}
 	}
