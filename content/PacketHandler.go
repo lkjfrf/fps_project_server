@@ -169,18 +169,33 @@ func (ph *PacketHandler) Handle_GameStartButton(c net.Conn, json string) {
 	}
 }
 
+func contains(s []User, elem User) bool {
+	for _, a := range s {
+		if a == elem {
+			return true
+		}
+	}
+	return false
+}
+
 func (ph *PacketHandler) Handle_ChangeHealth(c net.Conn, json string) {
 	recvpkt := utils.JsonStrToStruct[pkt.S_ChangeHealth](json)
 
 	if s, ok := sm.Sessions[recvpkt.RoomNumber]; ok {
 		currentHealth := s.ChangeHealth(recvpkt.PlayerIndex, recvpkt.Value)
 		log.Println("User", recvpkt.PlayerIndex, " Hit CurrentHealth :", currentHealth)
-		if currentHealth == 0 {
-			s.DeleteUser(recvpkt.PlayerIndex)
-			pk := pkt.R_Die{PlayerIndex: recvpkt.PlayerIndex, Rank: int32(len(s.Users))}
-			buffer := utils.MakeSendBuffer("Die", pk)
-			s.BroadCast(buffer)
-			log.Println("User", recvpkt.PlayerIndex, " Die")
+		if currentHealth <= 0 {
+			if s.Users[recvpkt.PlayerIndex].Conn != nil {
+				//s.DeleteUser(recvpkt.PlayerIndex)
+				pk := pkt.R_Die{PlayerIndex: recvpkt.PlayerIndex, Rank: int32(len(s.Users))}
+				buffer := utils.MakeSendBuffer("Die", pk)
+				s.BroadCast(buffer)
+				log.Println("User", recvpkt.PlayerIndex, " Die")
+				//지운거랑 똑같은처리
+				s.Users[recvpkt.PlayerIndex].Conn = nil
+			} else {
+				log.Println("User", recvpkt.PlayerIndex, " Already Dead!!")
+			}
 		} else {
 			pk := pkt.R_ChangeHealth{PlayerIndex: recvpkt.PlayerIndex, CurrentHealth: currentHealth}
 			buffer := utils.MakeSendBuffer("ChangeHealth", pk)
