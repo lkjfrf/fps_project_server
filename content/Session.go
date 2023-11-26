@@ -106,8 +106,8 @@ func (s *Session) StartSyncMove() {
 
 func (s *Session) UserDie(index int32) {
 	s.DieLock.Lock()
-	s.PlayerNum--
 	pk := pkt.R_Die{PlayerIndex: index, Rank: int32(s.PlayerNum)}
+	s.PlayerNum--
 	buffer := utils.MakeSendBuffer("Die", pk)
 	s.BroadCast(buffer)
 	log.Println("User", index, " Die")
