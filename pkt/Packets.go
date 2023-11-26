@@ -37,9 +37,8 @@ type R_PlayerSpawn struct {
 	PlayerIndex int32    // 자기 자신의 스폰포인트값
 	SpawnIndex  []int32  // 모든사람의 스폰포인트 값 (무작위)
 	PlayerIds   []string // 모든 사람 ID 값
-
+	PlayerNum   int32    // 인원 수
 	// 들어온 순 : 우현 영민 민석
-	//0
 	//2 0 1
 	//우현 영민 민석
 }
@@ -102,4 +101,15 @@ type R_ChangeHealth struct { // 맵에서 누군가 피 닳으면 맵에 있는 
 
 type R_Die struct { // 맵에서 누군가 죽으면 받는 패킷 (자신포함)
 	PlayerIndex int32
+	Rank        int32
+}
+
+// 자기가 죽어서 게임 끝났을떄 받는 패킷
+// 이 패킷 받는 순간부터 그 방이랑 세션 끊김
+type R_GameOver struct {
+	Rank int32 //
+}
+
+type R_GameEnd struct {
+	Rank int32
 }

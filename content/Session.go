@@ -14,6 +14,7 @@ type Session struct {
 	IsRunning  bool
 	UserLock   sync.Mutex
 	SpawnIndex []int32
+	PlayerNum  int32
 }
 
 type User struct {
@@ -38,10 +39,10 @@ func (s *Session) UserEnter(usr User) {
 	s.Users = append(s.Users, usr)
 	sm.Users[usr.Id] = &usr
 	s.UserLock.Unlock()
-	if len(s.Users) == MATCHINGNUM {
+	if len(s.Users) == int(s.PlayerNum) {
 		log.Println("Match Complete Start Sync Move")
 		s.StartSyncMove()
-	} else if len(s.Users) > MATCHINGNUM {
+	} else if len(s.Users) > int(s.PlayerNum) {
 		log.Println("MatchNum OverFlow")
 	}
 }

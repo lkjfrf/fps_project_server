@@ -90,8 +90,8 @@ func (ph *PacketHandler) Handle_PlayerMove(c net.Conn, json string) {
 		CurrentLocation: recvpkt.CurrentLocation}
 	buffer := utils.MakeSendBuffer("PlayerMove", pk)
 
-	if s, ok := sm.Sessions.Load(recvpkt.RoomNumber); ok {
-		s.(*Session).BroadCastExcpetMe(buffer, recvpkt.PlayerIndex)
+	if s, ok := sm.Sessions[recvpkt.RoomNumber]; ok {
+		s.BroadCastExcpetMe(buffer, recvpkt.PlayerIndex)
 	}
 	// sm.Users[recvpkt.PlayerIndex].Session.BroadCast(buffer)
 }
@@ -106,8 +106,8 @@ func (ph *PacketHandler) Handle_PlayerRotation(c net.Conn, json string) {
 	}
 	buffer := utils.MakeSendBuffer("PlayerRotation", pk)
 
-	if s, ok := sm.Sessions.Load(recvpkt.RoomNumber); ok {
-		s.(*Session).BroadCastExcpetMe(buffer, recvpkt.PlayerIndex)
+	if s, ok := sm.Sessions[recvpkt.RoomNumber]; ok {
+		s.BroadCastExcpetMe(buffer, recvpkt.PlayerIndex)
 	}
 	// sm.Users[recvpkt.PlayerIndex].Session.BroadCast(buffer)
 }
@@ -173,18 +173,18 @@ func (ph *PacketHandler) Handle_GameStartButton(c net.Conn, json string) {
 func (ph *PacketHandler) Handle_ChangeHealth(c net.Conn, json string) {
 	recvpkt := utils.JsonStrToStruct[pkt.S_ChangeHealth](json)
 
-	if s, ok := sm.Sessions.Load(recvpkt.RoomNumber); ok {
-		currentHealth := s.(*Session).ChangeHealth(recvpkt.PlayerIndex, recvpkt.Value)
+	if s, ok := sm.Sessions[recvpkt.RoomNumber]; ok {
+		currentHealth := s.ChangeHealth(recvpkt.PlayerIndex, recvpkt.Value)
 		log.Println("User", recvpkt.PlayerIndex, " Hit CurrentHealth :", currentHealth)
 		if currentHealth == 0 {
 			pk := pkt.R_Die{PlayerIndex: recvpkt.PlayerIndex}
 			buffer := utils.MakeSendBuffer("Die", pk)
-			s.(*Session).BroadCast(buffer)
+			s.BroadCast(buffer)
 			log.Println("User", recvpkt.PlayerIndex, " Die")
 		} else {
 			pk := pkt.R_ChangeHealth{PlayerIndex: recvpkt.PlayerIndex, CurrentHealth: currentHealth}
 			buffer := utils.MakeSendBuffer("ChangeHealth", pk)
-			s.(*Session).BroadCast(buffer)
+			s.BroadCast(buffer)
 		}
 	}
 }

@@ -7,7 +7,7 @@ import (
 )
 
 type SessionManager struct {
-	Sessions          *sync.Map
+	Sessions          map[int32]*Session
 	CurrentSessionNum int32
 	SessionLock       *sync.Mutex
 	// PlayerSession     map[int32]*Session
@@ -16,7 +16,7 @@ type SessionManager struct {
 
 func (sm *SessionManager) Init() {
 	sm.SessionLock = &sync.Mutex{}
-	sm.Sessions = &sync.Map{}
+	sm.Sessions = map[int32]*Session{}
 	sm.Users = map[string]*User{}
 	sm.CurrentSessionNum = 0
 	// sm.NewSession()
@@ -25,17 +25,22 @@ func (sm *SessionManager) Init() {
 func (sm *SessionManager) TempNewSessionEnter(RoomNum int32, Id string, Conn net.Conn) {
 	sm.SessionLock.Lock()
 
-	if r, ok := sm.Sessions.Load(RoomNum); ok {
-		r.(*Session).UserEnter(User{Conn: Conn, Id: Id, RoomNum: RoomNum, Session: r.(*Session), SpawnIndex: int32(len(r.(*Session).Users)), Health: 100})
+	if s, ok := sm.Sessions[RoomNum]; ok {
+		s.UserEnter(User{Conn: Conn, Id: Id, RoomNum: RoomNum, Session: s, SpawnIndex: int32(len(s.Users)), Health: 100})
 	} else {
-		s := Session{
-			RoomNum:    RoomNum,
-			Users:      []User{},
-			SpawnIndex: utils.RandomInt32(MATCHINGNUM, 0, MATCHINGNUM-1),
+		if r2, ok := ph.Room.Load(RoomNum); ok {
+			matchingNum := r2.(*RoomInfo).NumberOfPeople
+
+			s := Session{
+				RoomNum:    RoomNum,
+				Users:      []User{},
+				SpawnIndex: utils.RandomInt32(int(matchingNum), 0, int(matchingNum)-1),
+				PlayerNum:  matchingNum,
+			}
+			s.Init()
+			s.UserEnter(User{Conn: Conn, Id: Id, RoomNum: RoomNum, Session: &s, SpawnIndex: 0, Health: 100})
+			sm.Sessions[RoomNum] = &s
 		}
-		s.Init()
-		s.UserEnter(User{Conn: Conn, Id: Id, RoomNum: RoomNum, Session: &s, SpawnIndex: 0, Health: 100})
-		sm.Sessions.Store(RoomNum, &s)
 	}
 	sm.SessionLock.Unlock()
 }
