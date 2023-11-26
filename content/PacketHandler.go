@@ -166,7 +166,6 @@ func (ph *PacketHandler) Handle_GameStartButton(c net.Conn, json string) {
 				utils.SendPacket("GameStartButton", pk, c2.(net.Conn))
 			}
 		}
-		ph.Room.Delete(recvpkt.RoomNumber)
 	}
 }
 

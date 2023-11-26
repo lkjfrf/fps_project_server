@@ -39,9 +39,11 @@ func (s *Session) UserEnter(usr User) {
 	s.Users = append(s.Users, usr)
 	sm.Users[usr.Id] = &usr
 	s.UserLock.Unlock()
+	log.Println("UserEntered", s.Users, "/", s.PlayerNum)
 	if len(s.Users) == int(s.PlayerNum) {
 		log.Println("Match Complete Start Sync Move")
 		s.StartSyncMove()
+		ph.Room.Delete(s.RoomNum)
 	} else if len(s.Users) > int(s.PlayerNum) {
 		log.Println("MatchNum OverFlow")
 	}
