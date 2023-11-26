@@ -113,6 +113,7 @@ type R_GameEnd struct {
 
 // 죽고나서 로비가기 버튼 눌렀을떄
 type S_BackToLobby struct {
+	RoomNumber  int32
 	PlayerIndex int32
 }
 

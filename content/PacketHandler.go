@@ -170,22 +170,13 @@ func (ph *PacketHandler) Handle_GameStartButton(c net.Conn, json string) {
 	}
 }
 
-func contains(s []User, elem User) bool {
-	for _, a := range s {
-		if a == elem {
-			return true
-		}
-	}
-	return false
-}
-
 func (ph *PacketHandler) Handle_ChangeHealth(c net.Conn, json string) {
 	recvpkt := utils.JsonStrToStruct[pkt.S_ChangeHealth](json)
 
 	if s, ok := sm.Sessions[recvpkt.RoomNumber]; ok {
 		currentHealth := s.ChangeHealth(recvpkt.PlayerIndex, recvpkt.Value)
 		if currentHealth <= 0 {
-			if s.Users[recvpkt.PlayerIndex].Conn != nil {
+			if s.Users[recvpkt.PlayerIndex].Conn != nil && !s.Users[recvpkt.PlayerIndex].Dead {
 				s.UserDie(recvpkt.PlayerIndex)
 				if s.PlayerNum <= 1 {
 					pk := pkt.R_GameEnd{}
@@ -209,11 +200,12 @@ func (ph *PacketHandler) Handle_BackToLobby(c net.Conn, json string) {
 	recvpkt := utils.JsonStrToStruct[pkt.S_BackToLobby](json)
 
 	if s, ok := sm.Sessions[recvpkt.RoomNumber]; ok {
-		//지운거랑 똑같은처리
+		// 세션 끊기
 		s.Users[recvpkt.PlayerIndex].Conn = nil
 	}
 	pk := pkt.R_BackToLobby{}
 	utils.SendPacket("BackToLobby", pk, c)
+	sm.Sessions[recvpkt.RoomNumber] = nil
 }
 
 /* ------------------------------------------------------------

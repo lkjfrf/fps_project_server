@@ -29,6 +29,7 @@ type User struct {
 	Health          int32
 
 	SpawnIndex int32
+	Dead       bool
 }
 
 func (s *Session) Init() {
@@ -112,6 +113,7 @@ func (s *Session) UserDie(index int32) {
 	buffer := utils.MakeSendBuffer("Die", pk)
 	s.BroadCast(buffer)
 	log.Println("User", index, " Die")
+	s.Users[index].Dead = true
 
 	s.DieLock.Unlock()
 }
