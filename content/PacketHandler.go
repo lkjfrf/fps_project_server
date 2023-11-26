@@ -202,10 +202,12 @@ func (ph *PacketHandler) Handle_BackToLobby(c net.Conn, json string) {
 	if s, ok := sm.Sessions[recvpkt.RoomNumber]; ok {
 		// 세션 끊기
 		s.Users[recvpkt.PlayerIndex].Conn = nil
+		if s.PlayerNum <= 0 {
+			sm.Sessions[recvpkt.RoomNumber] = nil
+		}
 	}
 	pk := pkt.R_BackToLobby{}
 	utils.SendPacket("BackToLobby", pk, c)
-	sm.Sessions[recvpkt.RoomNumber] = nil
 }
 
 /* ------------------------------------------------------------
