@@ -99,17 +99,14 @@ type R_ChangeHealth struct { // 맵에서 누군가 피 닳으면 맵에 있는 
 	CurrentHealth int32
 }
 
-type R_Die struct { // 맵에서 누군가 죽으면 받는 패킷 (자신포함)
+// 맵에서 누군가 죽으면 받는 패킷 (자신포함)
+// 죽으면 바로 세션끊김
+type R_Die struct {
 	PlayerIndex int32
 	Rank        int32
 }
 
-// 자기가 죽어서 게임 끝났을떄 받는 패킷
-// 이 패킷 받는 순간부터 그 방이랑 세션 끊김
-type R_GameOver struct {
-	Rank int32 //
-}
-
+// 최후의 1인 되면 그 1인한테 주는 패킷
+// 세션끊고 방 지워버림
 type R_GameEnd struct {
-	Rank int32
 }

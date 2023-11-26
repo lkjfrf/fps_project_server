@@ -71,7 +71,7 @@ func (s *Session) UserEnter(usr User) {
 func (s *Session) StartSyncMove() {
 
 	// Spawn
-	spawnPkt := pkt.R_PlayerSpawn{SpawnIndex: s.SpawnIndex}
+	spawnPkt := pkt.R_PlayerSpawn{SpawnIndex: s.SpawnIndex, PlayerNum: s.PlayerNum}
 	for _, u := range s.Users {
 		spawnPkt.PlayerIds = append(spawnPkt.PlayerIds, u.Id)
 	}
@@ -101,6 +101,19 @@ func (s *Session) StartSyncMove() {
 	//		}
 	//	}
 	//}()
+}
+
+func (s *Session) DeleteUser(index int32) {
+loop:
+	for i := 0; i < len(s.Users); i++ {
+		u := s.Users[i]
+		if u.SpawnIndex == index {
+			log.Println("s.Users Delete", u.Id)
+			s.Users = append(s.Users[:i], s.Users[i+1:]...)
+			i-- // Important: decrease index
+			continue loop
+		}
+	}
 }
 
 func (s *Session) BroadCast(buffer []byte) {

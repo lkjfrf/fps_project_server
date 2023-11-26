@@ -5,5 +5,3 @@
 
 
 die 순위추가
-
-playerspawn 인원수 추가
