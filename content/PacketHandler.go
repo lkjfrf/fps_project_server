@@ -187,6 +187,12 @@ func (ph *PacketHandler) Handle_ChangeHealth(c net.Conn, json string) {
 		if currentHealth <= 0 {
 			if s.Users[recvpkt.PlayerIndex].Conn != nil {
 				s.UserDie(recvpkt.PlayerIndex)
+				if s.PlayerNum <= 1 {
+					pk := pkt.R_GameEnd{}
+					buffer := utils.MakeSendBuffer("GameEnd", pk)
+					s.BroadCast(buffer)
+					log.Println(s.RoomNum, "ROOM GAME END!!")
+				}
 			} else {
 				log.Println("User", recvpkt.PlayerIndex, " Already Dead!!")
 			}
