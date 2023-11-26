@@ -115,6 +115,12 @@ func (s *Session) UserDie(index int32) {
 	log.Println("User", index, " Die")
 	s.Users[index].Dead = true
 
+	if s.PlayerNum <= 1 {
+		pk := pkt.R_GameEnd{}
+		buffer := utils.MakeSendBuffer("GameEnd", pk)
+		s.BroadCast(buffer)
+		log.Println(s.RoomNum, "ROOM GAME END!!")
+	}
 	s.DieLock.Unlock()
 }
 
