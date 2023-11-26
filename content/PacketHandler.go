@@ -186,13 +186,7 @@ func (ph *PacketHandler) Handle_ChangeHealth(c net.Conn, json string) {
 		log.Println("User", recvpkt.PlayerIndex, " Hit CurrentHealth :", currentHealth)
 		if currentHealth <= 0 {
 			if s.Users[recvpkt.PlayerIndex].Conn != nil {
-				//s.DeleteUser(recvpkt.PlayerIndex)
-				pk := pkt.R_Die{PlayerIndex: recvpkt.PlayerIndex, Rank: int32(len(s.Users))}
-				buffer := utils.MakeSendBuffer("Die", pk)
-				s.BroadCast(buffer)
-				log.Println("User", recvpkt.PlayerIndex, " Die")
-				//지운거랑 똑같은처리
-				s.Users[recvpkt.PlayerIndex].Conn = nil
+				s.UserDie(recvpkt.PlayerIndex)
 			} else {
 				log.Println("User", recvpkt.PlayerIndex, " Already Dead!!")
 			}

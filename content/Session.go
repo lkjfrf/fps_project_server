@@ -15,6 +15,7 @@ type Session struct {
 	UserLock   sync.Mutex
 	SpawnIndex []int32
 	PlayerNum  int32
+	DieLock    sync.Mutex
 }
 
 type User struct {
@@ -103,17 +104,16 @@ func (s *Session) StartSyncMove() {
 	//}()
 }
 
-func (s *Session) DeleteUser(index int32) {
-loop:
-	for i := 0; i < len(s.Users); i++ {
-		u := s.Users[i]
-		if u.SpawnIndex == index {
-			log.Println("s.Users Delete", u.Id)
-			s.Users = append(s.Users[:i], s.Users[i+1:]...)
-			i-- // Important: decrease index
-			continue loop
-		}
-	}
+func (s *Session) UserDie(index int32) {
+	s.DieLock.Lock()
+	s.PlayerNum--
+	pk := pkt.R_Die{PlayerIndex: index, Rank: int32(s.PlayerNum)}
+	buffer := utils.MakeSendBuffer("Die", pk)
+	s.BroadCast(buffer)
+	log.Println("User", index, " Die")
+	//지운거랑 똑같은처리
+	s.Users[index].Conn = nil
+	s.DieLock.Unlock()
 }
 
 func (s *Session) BroadCast(buffer []byte) {
