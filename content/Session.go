@@ -109,16 +109,19 @@ func (s *Session) UserDie(index int32) {
 	s.DieLock.Lock()
 
 	pk := pkt.R_Die{PlayerIndex: index, Rank: int32(s.PlayerNum)}
-	s.PlayerNum--
 	buffer := utils.MakeSendBuffer("Die", pk)
 	s.BroadCast(buffer)
 	log.Println("User", index, " Die")
 	s.Users[index].Dead = true
+	s.PlayerNum--
 
 	if s.PlayerNum <= 1 {
 		pk := pkt.R_GameEnd{}
-		buffer := utils.MakeSendBuffer("GameEnd", pk)
-		s.BroadCast(buffer)
+		for _, u := range s.Users {
+			if !u.Dead {
+				utils.SendPacket("GameEnd", pk, u.Conn)
+			}
+		}
 		log.Println(s.RoomNum, "ROOM GAME END!!")
 	}
 	s.DieLock.Unlock()
