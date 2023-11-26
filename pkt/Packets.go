@@ -110,3 +110,12 @@ type R_Die struct {
 // 세션끊고 방 지워버림
 type R_GameEnd struct {
 }
+
+// 죽고나서 로비가기 버튼 눌렀을떄
+type S_BackToLobby struct {
+	PlayerIndex int32
+}
+
+// 로비가기 시작해서 세션 끊기 완료했을떄 주기
+type R_BackToLobby struct {
+}

@@ -106,13 +106,13 @@ func (s *Session) StartSyncMove() {
 
 func (s *Session) UserDie(index int32) {
 	s.DieLock.Lock()
+
 	pk := pkt.R_Die{PlayerIndex: index, Rank: int32(s.PlayerNum)}
 	s.PlayerNum--
 	buffer := utils.MakeSendBuffer("Die", pk)
 	s.BroadCast(buffer)
 	log.Println("User", index, " Die")
-	//지운거랑 똑같은처리
-	s.Users[index].Conn = nil
+
 	s.DieLock.Unlock()
 }
 
@@ -121,8 +121,6 @@ func (s *Session) BroadCast(buffer []byte) {
 		if u.Conn != nil {
 			u.Conn.Write(buffer)
 			//log.Println("BROADCASTED to ", u.Id)
-		} else {
-			log.Println("No Connection:", string(buffer))
 		}
 	}
 }

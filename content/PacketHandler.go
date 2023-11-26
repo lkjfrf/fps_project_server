@@ -52,6 +52,7 @@ func (ph *PacketHandler) Init() {
 	ph.TCPHandlerFunc["LoadingComplete"] = ph.Handle_LoadingComplete
 	ph.TCPHandlerFunc["RoomCreate"] = ph.Handle_RoomCreate
 	ph.TCPHandlerFunc["RequestRoomList"] = ph.Handle_RequestRoomList
+	ph.TCPHandlerFunc["BackToLobby"] = ph.Handle_BackToLobby
 
 	// Health
 	ph.TCPHandlerFunc["ChangeHealth"] = ph.Handle_ChangeHealth
@@ -183,7 +184,6 @@ func (ph *PacketHandler) Handle_ChangeHealth(c net.Conn, json string) {
 
 	if s, ok := sm.Sessions[recvpkt.RoomNumber]; ok {
 		currentHealth := s.ChangeHealth(recvpkt.PlayerIndex, recvpkt.Value)
-		log.Println("User", recvpkt.PlayerIndex, " Hit CurrentHealth :", currentHealth)
 		if currentHealth <= 0 {
 			if s.Users[recvpkt.PlayerIndex].Conn != nil {
 				s.UserDie(recvpkt.PlayerIndex)
@@ -200,8 +200,20 @@ func (ph *PacketHandler) Handle_ChangeHealth(c net.Conn, json string) {
 			pk := pkt.R_ChangeHealth{PlayerIndex: recvpkt.PlayerIndex, CurrentHealth: currentHealth}
 			buffer := utils.MakeSendBuffer("ChangeHealth", pk)
 			s.BroadCast(buffer)
+			log.Println("User", recvpkt.PlayerIndex, " Hit CurrentHealth :", currentHealth)
 		}
 	}
+}
+
+func (ph *PacketHandler) Handle_BackToLobby(c net.Conn, json string) {
+	recvpkt := utils.JsonStrToStruct[pkt.S_BackToLobby](json)
+
+	if s, ok := sm.Sessions[recvpkt.RoomNumber]; ok {
+		//지운거랑 똑같은처리
+		s.Users[recvpkt.PlayerIndex].Conn = nil
+	}
+	pk := pkt.R_BackToLobby{}
+	utils.SendPacket("BackToLobby", pk, c)
 }
 
 /* ------------------------------------------------------------
